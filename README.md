@@ -10,6 +10,8 @@ A fast, flexible DNS lookup and enumeration toolkit written in Go. Supports mult
 - **Domain Enumeration**: AXFR zone transfer attempts with automatic fallback to subdomain brute-forcing
 - **Domain Sweeping**: Bulk domain scanning capabilities
 - **Reputation Lookups**: Integration with dnsscience.io API for IP/domain reputation checks
+- **Threat Intelligence**: Integration with darkapi.io for comprehensive threat analysis (IP, domain, URL)
+- **Cross-Reference Mode**: Compare threat intelligence from multiple sources
 - **Web3 Support**: Web3/blockchain domain lookups
 - **Flexible Output**: JSON, table, or dig-style output formats
 - **DNSSEC Support**: Request DNSSEC validation with DO bit
@@ -176,19 +178,55 @@ adsdnsgo sweep [flags]
 
 ### rep
 
-Lookup IP or domain reputation using the dnsscience.io API.
+Lookup IP or domain reputation using dnsscience.io or darkapi.io APIs.
 
 ```bash
 adsdnsgo rep [ip_or_domain]
 ```
 
-**Example:**
+**Examples:**
 ```bash
-# Check IP reputation
+# Check IP reputation (dnsscience.io - default)
 adsdnsgo rep 8.8.8.8
 
-# Check domain reputation
+# Check domain reputation (dnsscience.io)
 adsdnsgo rep example.com --api-key YOUR_API_KEY
+
+# Check IP reputation (darkapi.io)
+adsdnsgo rep 1.2.3.4 --darkapi --darkapi-key YOUR_DARKAPI_KEY
+
+# Check domain reputation (darkapi.io)
+adsdnsgo rep malicious.com --darkapi --darkapi-key YOUR_DARKAPI_KEY
+```
+
+### threat
+
+Comprehensive threat intelligence lookups using darkapi.io with support for IPs, domains, and URLs. Includes cross-referencing capabilities with dnsscience.io.
+
+```bash
+adsdnsgo threat [target]
+```
+
+**Flags:**
+- `--xref`: Cross-reference results with dnsscience.io
+- `--raw`: Show raw JSON response
+
+**Examples:**
+```bash
+# IP threat lookup
+adsdnsgo threat 1.2.3.4 --darkapi-key YOUR_KEY
+
+# Domain threat lookup
+adsdnsgo threat malicious.com --darkapi-key YOUR_KEY
+
+# URL threat analysis
+adsdnsgo threat https://phishing-site.com --darkapi-key YOUR_KEY
+
+# Cross-reference with dnsscience.io
+adsdnsgo threat 1.2.3.4 --xref --darkapi-key DARKAPI_KEY --api-key DNSSCIENCE_KEY
+
+# Show raw JSON response
+adsdnsgo threat malicious.com --raw --darkapi-key YOUR_KEY
 ```
 
 ### web3
@@ -276,10 +314,17 @@ adsdnsgo lookup example.com --subnet 203.0.113.0/24
 ### API Integration
 
 ```bash
---api-url string   # dnsscience.io API URL (default: "https://dnsscience.io")
---api-key string   # API key for premium features
---premium         # Enable premium API features
--k, --insecure    # Skip TLS certificate verification
+# DNSScience.io Integration
+--api-url string      # dnsscience.io API URL (default: "https://dnsscience.io")
+--api-key string      # API key for dnsscience.io
+--premium            # Enable premium API features
+
+# DarkAPI.io Integration
+--darkapi-url string  # darkapi.io API URL (default: "https://api.darkapi.io/v1")
+--darkapi-key string  # API key for darkapi.io
+
+# General Options
+-k, --insecure       # Skip TLS certificate verification
 ```
 
 ## Configuration File
@@ -293,7 +338,8 @@ adsdnsgo supports a configuration file at `~/.dnsgocfg.json` for persistent sett
   "protocol": "https",
   "format": "table",
   "timeout": "10s",
-  "api-key": "your-api-key-here"
+  "api-key": "your-dnsscience-api-key-here",
+  "darkapi-key": "your-darkapi-key-here"
 }
 ```
 
@@ -354,10 +400,33 @@ adsdnsgo enum target.com \
 adsdnsgo lookup example.com 65 --format dig
 ```
 
+### Threat intelligence analysis with cross-referencing
+
+```bash
+# Check IP reputation across both dnsscience.io and darkapi.io
+adsdnsgo threat 1.2.3.4 --xref \
+  --darkapi-key YOUR_DARKAPI_KEY \
+  --api-key YOUR_DNSSCIENCE_KEY
+
+# Comprehensive domain threat analysis
+adsdnsgo threat malicious.com \
+  --darkapi-key YOUR_DARKAPI_KEY \
+  --raw
+
+# URL phishing and malware check
+adsdnsgo threat https://suspicious-url.com/payload \
+  --darkapi-key YOUR_DARKAPI_KEY
+```
+
 ## Environment Variables
 
-- `DNSSCIENCE_API_URL`: Override default API URL
+### DNSScience.io
+- `DNSSCIENCE_API_URL`: Override default dnsscience.io API URL
 - `DNSSCIENCE_API_KEY`: Set API key for dnsscience.io integration
+
+### DarkAPI.io
+- `DARKAPI_API_URL`: Override default darkapi.io API URL (default: https://api.darkapi.io/v1)
+- `DARKAPI_API_KEY`: Set API key for darkapi.io threat intelligence
 
 ## Use Cases
 

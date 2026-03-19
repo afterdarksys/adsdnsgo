@@ -28,6 +28,8 @@ var (
 	DNSSEC      bool
 	ApiUrl      string
 	ApiKey      string
+	DarkApiUrl  string
+	DarkApiKey  string
 	Insecure    bool
 	Premium     bool
 	Format      string
@@ -89,6 +91,8 @@ func init() {
 	
 	rootCmd.PersistentFlags().StringVar(&ApiUrl, "api-url", "https://dnsscience.io", "URL for dnsscience.io API (can also be set via DNSSCIENCE_API_URL env var)")
 	rootCmd.PersistentFlags().StringVar(&ApiKey, "api-key", "", "API key for dnsscience.io API (can also be set via DNSSCIENCE_API_KEY env var)")
+	rootCmd.PersistentFlags().StringVar(&DarkApiUrl, "darkapi-url", "https://api.darkapi.io/v1", "URL for darkapi.io API (can also be set via DARKAPI_API_URL env var)")
+	rootCmd.PersistentFlags().StringVar(&DarkApiKey, "darkapi-key", "", "API key for darkapi.io API (can also be set via DARKAPI_API_KEY env var)")
 	rootCmd.PersistentFlags().BoolVarP(&Insecure, "insecure", "k", false, "Skip TLS certificate verification")
 	rootCmd.PersistentFlags().BoolVar(&Premium, "premium", false, "Enable premium features")
 	
